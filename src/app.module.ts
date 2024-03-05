@@ -1,7 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AppController } from './app.controller';
+import { AuthModule } from './auth/auth.module';
+import { OffersModule } from './offers/offers.module';
+import { UsersModule } from './users/users.module';
+import { WishesModule } from './wishes/wishes.module';
+import { WishlistsModule } from './wishlists/wishlists.module';
 
 @Module({
   imports: [
@@ -15,10 +20,16 @@ import { ConfigModule } from '@nestjs/config';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_USER_PASSWORD,
       database: process.env.POSTGRES_NAME_DB,
-      entities: [],
+      entities: [__dirname + '/**/*.entity{.js, .ts}'],
       synchronize: true,
     }),
+    AuthModule,
+    UsersModule,
+    WishesModule,
+    WishlistsModule,
+    OffersModule,
   ],
   controllers: [AppController],
+  providers: [],
 })
 export class AppModule {}
