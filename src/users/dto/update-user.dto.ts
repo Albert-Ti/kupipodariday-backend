@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 
-export class CreateUserDto {
+export class UpdateUserDto {
   @Length(2, 30, {
     message: 'имя пользователя должно содержать от двух до тридцати символов',
   })

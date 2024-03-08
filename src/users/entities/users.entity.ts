@@ -6,10 +6,10 @@ import { Column, Entity, OneToMany } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User extends GeneralEntityProperties {
-  @Column({ length: 30, unique: true })
+  @Column({ unique: true })
   username: string;
 
-  @Column({ length: 200, default: 'Пока ничего не рассказал о себе' })
+  @Column({ default: 'Пока ничего не рассказал о себе' })
   about: string;
 
   @Column({ default: 'https://i.pravatar.cc/300' })
@@ -27,6 +27,6 @@ export class User extends GeneralEntityProperties {
   @OneToMany(() => Offer, (offer) => offer.user)
   offers: Offer[];
 
-  @OneToMany(() => Offer, (offer) => offer.user)
-  wishlists: Wishlist;
+  @OneToMany(() => Wishlist, (wishlists) => wishlists.user)
+  wishlists: Wishlist[];
 }

@@ -5,7 +5,7 @@ import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'offers' })
 export class Offer extends GeneralEntityProperties {
-  @Column()
+  @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
   @Column({ default: false })
