@@ -9,7 +9,9 @@ export class CreateUserDto {
   @IsEmail({}, { message: 'Некорректный email' })
   readonly email: string;
 
-  @IsNotEmpty({ message: 'Введите пароль' })
+  @Length(4, 16, {
+    message: 'Пароль должен содержать от 4-х до 16-ти символов',
+  })
   readonly password: string;
 
   @Length(2, 200, {

@@ -1,3 +1,4 @@
-import { FindOptionsWhere } from 'typeorm';
+import { Request } from 'express';
+import { User } from './users/entities/users.entity';
 
-export type QueryFilter<T> = FindOptionsWhere<T> | FindOptionsWhere<T>[];
+export type UserRequest = Request & { user: User };
