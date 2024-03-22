@@ -9,8 +9,8 @@ export class GeneralEntityProperties {
   id: number;
 
   @CreateDateColumn()
-  createAt: Date;
+  createdAt: Date;
 
   @UpdateDateColumn()
-  updateAt: Date;
+  updatedAt: Date;
 }

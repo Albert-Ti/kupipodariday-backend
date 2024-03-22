@@ -9,17 +9,17 @@ export class User extends GeneralEntityProperties {
   @Column({ unique: true })
   username: string;
 
-  @Column({ default: 'Пока ничего не рассказал о себе' })
-  about: string;
-
-  @Column({ default: 'https://i.pravatar.cc/300' })
-  avatar: string;
-
   @Column({ unique: true })
   email: string;
 
   @Column()
   password: string;
+
+  @Column({ default: 'Пока ничего не рассказал о себе' })
+  about: string;
+
+  @Column({ default: 'https://i.pravatar.cc/300' })
+  avatar: string;
 
   @OneToMany(() => Wish, (wish) => wish.owner)
   wishes: Wish[];

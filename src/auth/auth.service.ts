@@ -1,9 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { User } from 'src/users/entities/users.entity';
 import { UsersService } from 'src/users/users.service';
-import { SigninDto } from './dto/signin.dto';
+import { SignupDto } from './dto/signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -12,27 +12,25 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async signup(dto: CreateUserDto) {
-    return this.userService.create(dto);
+  async register(dto: SignupDto) {
+    return await this.userService.create(dto);
   }
-  async signin(dto: SigninDto) {
-    try {
-      const user = await this.userService.findOne({ email: dto.email });
-      const matched = await bcrypt.compare(dto.password, user.password);
 
-      if (!matched) {
-        throw new UnauthorizedException('Неверная почта или пароль');
-      }
-      const payload = { sub: user.id };
+  async authToken(user: User) {
+    const payload = { sub: user.id };
+    return {
+      access_token: this.jwtService.sign(payload, {
+        secret: process.env.SECRET_KEY,
+      }),
+    };
+  }
 
-      return {
-        token: this.jwtService.sign(payload, {
-          secret: process.env.SECRET_KEY,
-        }),
-      };
-    } catch (error) {
-      console.log(error);
-      throw new UnauthorizedException('Неверная почта или пароль');
+  async validatePassword(username: string, password: string) {
+    const user = await this.userService.findOne({ username });
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const { password, ...result } = user;
+      return result;
     }
+    return null;
   }
 }

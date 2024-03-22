@@ -6,7 +6,7 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity({ name: 'wishes' })
 export class Wish extends GeneralEntityProperties {
-  @Column({ length: 250 })
+  @Column()
   name: string;
 
   @Column()
@@ -18,7 +18,7 @@ export class Wish extends GeneralEntityProperties {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   price: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
+  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   raised: number;
 
   @Column({ length: 1024 })

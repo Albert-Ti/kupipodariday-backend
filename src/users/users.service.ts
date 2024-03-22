@@ -1,14 +1,10 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/users.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { User } from './entities/users.entity';
 
 @Injectable()
 export class UsersService {
@@ -17,26 +13,30 @@ export class UsersService {
   ) {}
 
   async create(dto: CreateUserDto) {
-    try {
-      const hash = await bcrypt.hash(dto.password, 10);
-      const user = await this.userRepository.save({ ...dto, password: hash });
-      const { password, ...result } = user;
-
-      return result;
-    } catch (error) {
-      throw new BadRequestException('Пользователь уже существует');
-    }
+    const hash = await bcrypt.hash(dto.password, 10);
+    const user = await this.userRepository.save({ ...dto, password: hash });
+    const { password, ...result } = user;
+    return result;
   }
 
   async findOne(query: FindOptionsWhere<User>) {
-    const user = await this.userRepository.findOne({
-      where: query,
-      select: { password: false },
-    });
-    if (!user) {
+    try {
+      return await this.userRepository.findOne({
+        where: query,
+        select: { password: false },
+      });
+    } catch (error) {
       throw new NotFoundException('Пользователь не найден');
     }
-    return user;
+  }
+
+  async findMany(query: string) {
+    const users = await this.userRepository.find({
+      where: [{ email: query }, { username: query }],
+      select: { password: false },
+    });
+
+    return users;
   }
 
   async updateOne(query: number, dto: UpdateUserDto) {

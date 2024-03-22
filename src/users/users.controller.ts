@@ -1,41 +1,54 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
+  Param,
   Patch,
   Post,
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { UserRequest } from 'src/types';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { UserRequest } from 'src/types';
+import { WishesService } from 'src/wishes/wishes.service';
 
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(
+    private readonly userService: UsersService,
+    private readonly wishesService: WishesService,
+  ) {}
 
-  @Post()
-  async create(@Body() dto: CreateUserDto) {
-    return await this.userService.create(dto);
+  @Get('me')
+  async getMe(@Req() req: UserRequest) {
+    return req.user;
   }
 
-  @Get('find')
-  async find(@Body() query) {
-    return await this.userService.findOne(query);
+  @Get('me/wishes')
+  async getMyWishes(@Req() req: UserRequest) {
+    return await this.wishesService.findOwnWishes({ id: req.user.id });
   }
 
   @Patch('me')
-  @UseGuards(JwtAuthGuard)
-  async update(@Req() req: UserRequest, @Body() dto: UpdateUserDto) {
+  async updateMe(@Req() req: UserRequest, @Body() dto: UpdateUserDto) {
     return await this.userService.updateOne(req.user.id, dto);
   }
 
-  @Delete()
-  async remove(@Body() query) {
-    return await this.userService.removeOne(query);
+  @Get(':username/wishes')
+  async getUsernameByWishes(@Param('username') username: string) {
+    return [];
+  }
+
+  @Get(':username')
+  async getUsername(@Param('username') username: string) {
+    return await this.userService.findOne({ username });
+  }
+
+  @Post('find')
+  async findMany(@Body() { query }) {
+    return await this.userService.findMany(query);
   }
 }
