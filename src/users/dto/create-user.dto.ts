@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 
 export class CreateUserDto {
   @Length(2, 30, {
@@ -21,6 +21,6 @@ export class CreateUserDto {
   readonly about: string;
 
   @IsOptional()
-  @IsString({ message: 'Должно быть строкой' })
+  @IsUrl({}, { message: 'Должен быть ссылкой' })
   readonly avatar: string;
 }

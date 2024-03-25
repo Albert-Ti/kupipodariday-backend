@@ -18,7 +18,7 @@ import { WishesService } from 'src/wishes/wishes.service';
 @Controller('users')
 export class UsersController {
   constructor(
-    private readonly userService: UsersService,
+    private readonly usersService: UsersService,
     private readonly wishesService: WishesService,
   ) {}
 
@@ -34,21 +34,27 @@ export class UsersController {
 
   @Patch('me')
   async updateMe(@Req() req: UserRequest, @Body() dto: UpdateUserDto) {
-    return await this.userService.updateOne(req.user.id, dto);
+    return await this.usersService.updateOne({ id: req.user.id }, dto);
   }
+  /*
+  (@Param('username') username: string) - ругался и выдавал ошибку (500), решалось если username назначить типом number, поэтому описал по другому.
+  */
 
   @Get(':username/wishes')
-  async getUsernameByWishes(@Param('username') username: string) {
-    return [];
+  async getUsernameByWishes(@Param() params: { username: string }) {
+    return await this.wishesService.findMany({ where: { owner: params } });
   }
 
   @Get(':username')
-  async getUsername(@Param('username') username: string) {
-    return await this.userService.findOne({ username });
+  async getUsername(@Param() params: { username: string }) {
+    return await this.usersService.findOne({
+      where: params,
+      select: { password: false },
+    });
   }
 
   @Post('find')
   async findMany(@Body() { query }) {
-    return await this.userService.findMany(query);
+    return await this.usersService.findMany(query);
   }
 }

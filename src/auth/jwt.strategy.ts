@@ -12,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
   async validate(payload: { sub: number }) {
-    const user = await this.userService.findOne({ id: payload.sub });
+    const user = await this.userService.findOne({ where: { id: payload.sub } });
     if (!user) {
       throw new UnauthorizedException('Пользователь не авторизован');
     }
