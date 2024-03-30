@@ -5,10 +5,10 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity({ name: 'wishlists' })
 export class Wishlist extends GeneralEntityProperties {
-  @Column({ length: 250 })
+  @Column()
   name: string;
 
-  @Column({ length: 1500 })
+  @Column({ nullable: true })
   description: string;
 
   @Column()

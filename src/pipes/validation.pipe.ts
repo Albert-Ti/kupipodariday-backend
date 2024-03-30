@@ -6,6 +6,18 @@ import { ValidationException } from 'src/exceptions/validation.exception';
 @Injectable()
 export class ValidationPipe implements PipeTransform<any> {
   async transform(value: any, metadata: ArgumentMetadata) {
+    if (value === null || value === undefined) {
+      return value; // Если значение null или undefined, вернуть его без валидации
+    }
+
+    if (typeof value === 'object') {
+      for (const key in value) {
+        if (value.hasOwnProperty(key) && value[key] === '') {
+          delete value[key]; // Удалить поле с пустым значением из объекта
+        }
+      }
+    }
+
     const obj = plainToClass(metadata.metatype, value);
 
     const errors = await validate(obj);

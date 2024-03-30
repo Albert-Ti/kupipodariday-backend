@@ -39,13 +39,18 @@ export class WishesController {
   async getById(@Param('id') id: number) {
     return await this.wishesService.findOne({
       where: { id },
-      relations: { offers: true, owner: true },
+      relations: { owner: true, offers: { user: true } },
+      order: { createdAt: 'DESC' },
     });
   }
 
   @Patch(':id')
-  async update(@Param('id') id: number, dto: UpdateWishDto) {
-    return await this.wishesService.updateOne({ where: { id } }, dto);
+  async update(
+    @Req() req: UserRequest,
+    @Body() dto: UpdateWishDto,
+    @Param('id') id: number,
+  ) {
+    return await this.wishesService.updateOne(req.user, { where: { id } }, dto);
   }
 
   @Delete(':id')
@@ -55,6 +60,9 @@ export class WishesController {
 
   @Post(':id/copy')
   async copy(@Req() req: UserRequest, @Param('id') id: number) {
-    return await this.wishesService.copy(req.user, { where: { id } });
+    return await this.wishesService.copy(req.user, {
+      where: { id },
+      relations: { owner: true },
+    });
   }
 }

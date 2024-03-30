@@ -12,6 +12,10 @@ export class WishlistsService {
 
   async create() {}
 
+  async findAll() {
+    return await this.wishlistRepository.find();
+  }
+
   async findOne() {}
 
   async updateOne() {}

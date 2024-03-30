@@ -1,12 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/users.entity';
-import {
-  FindManyOptions,
-  FindOneOptions,
-  FindOptionsWhere,
-  Repository,
-} from 'typeorm';
+import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wishes.entity';
@@ -17,19 +12,16 @@ export class WishesService {
     @InjectRepository(Wish) private readonly wishRepository: Repository<Wish>,
   ) {}
 
-  async create(owner: User, dto: CreateWishDto) {
-    return await this.wishRepository.save({ ...dto, owner });
+  async create(authorizedUser: User, dto: CreateWishDto) {
+    return await this.wishRepository.save({ ...dto, owner: authorizedUser });
   }
 
   async findOne(query: FindOneOptions) {
-    return this.wishRepository.findOne(query);
+    return await this.wishRepository.findOne(query);
   }
 
-  async findOwnWishes(query: FindOptionsWhere<Wish>) {
-    return this.wishRepository.find({
-      where: { owner: query },
-      order: { createdAt: 'DESC' },
-    });
+  async findOwnWishes(query: FindManyOptions) {
+    return await this.wishRepository.find(query);
   }
 
   async findLast() {
@@ -50,24 +42,66 @@ export class WishesService {
     return await this.wishRepository.find(query);
   }
 
-  async updateOne(query: FindOneOptions, dto: UpdateWishDto) {
-    const wish = await this.findOne(query);
-    return await this.wishRepository.update(wish, dto);
+  async updateOne(
+    authorizedUser: User,
+    query: FindOneOptions,
+    dto: UpdateWishDto,
+  ) {
+    const { id, raised, owner, offers } = await this.findOne({
+      ...query,
+      relations: { owner: true, offers: true },
+    });
+
+    if (authorizedUser.id !== owner.id) {
+      throw new ForbiddenException(
+        'Нельзя удалить или изменить чужие пожелания',
+      );
+    }
+    if (offers.length || !raised) {
+      throw new ForbiddenException(
+        'Нельзя удалить или изменить, пользователи уже внесли денежные средства',
+      );
+    }
+
+    return await this.wishRepository.update(id, dto);
+  }
+
+  async updateRaised(id: number) {
+    const wish = await this.wishRepository.findOne({
+      where: { id },
+      relations: { owner: true, offers: true },
+    });
+
+    await this.wishRepository.save({
+      ...wish,
+      raised: wish.offers.reduce((sum, offer) => sum + +offer.amount, 0),
+    });
   }
 
   async removeOne(query: FindOneOptions) {
     const wish = await this.findOne(query);
-    return await this.wishRepository.delete(wish);
+
+    if (+wish.raised) {
+      throw new ForbiddenException(
+        'Нельзя удалить или изменить, пользователи уже внесли денежные средства',
+      );
+    }
+    return await this.wishRepository.delete(wish.id);
   }
 
-  async copy(owner: User, query: FindOneOptions) {
+  async copy(authorizedUser: User, query: FindOneOptions) {
     const originalWish = await this.findOne(query);
+
+    if (authorizedUser.id === originalWish.owner.id) {
+      throw new ForbiddenException('Нельзя копировать собственное пожелание');
+    }
+
     originalWish.copied += 1;
     await this.wishRepository.save(originalWish);
 
-    const { id, createdAt, updatedAt, copied, ...copiedWish } =
+    const { id, createdAt, updatedAt, copied, raised, ...copiedWish } =
       Object.assign(originalWish);
 
-    return await this.create(owner, copiedWish);
+    return await this.create(authorizedUser, copiedWish);
   }
 }

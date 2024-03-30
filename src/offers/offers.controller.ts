@@ -21,13 +21,13 @@ export class OffersController {
     return await this.offersService.create(req.user, dto);
   }
 
+  @Get(':id')
+  async findOne(@Param('id') id: number) {
+    return await this.offersService.findOne({ where: { id } });
+  }
+
   @Get()
   async findAll() {
     return await this.offersService.findAll();
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return await this.offersService.findOne({ id });
   }
 }

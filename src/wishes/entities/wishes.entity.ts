@@ -21,13 +21,13 @@ export class Wish extends GeneralEntityProperties {
   @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
   raised: number;
 
-  @Column({ length: 1024 })
+  @Column({ nullable: true })
   description: string;
 
   @Column({ default: 0 })
   copied: number;
 
-  @OneToMany(() => Offer, (offer) => offer.item)
+  @OneToMany(() => Offer, (offer) => offer.item, { cascade: true })
   offers: Offer[];
 
   @ManyToOne(() => User, (user) => user.wishes)

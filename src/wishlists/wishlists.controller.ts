@@ -6,19 +6,26 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
-@Controller('wishlists')
+UseGuards(JwtAuthGuard);
+@Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
   @Post()
-  async create(@Body() dto: CreateWishlistDto) {}
+  async create(@Body() dto: CreateWishlistDto) {
+    console.log(dto);
+  }
 
   @Get()
-  async findAll() {}
+  async findAll() {
+    return await this.wishlistsService.findAll();
+  }
 
   @Get(':id')
   async findOne(@Param('id') id: number) {}

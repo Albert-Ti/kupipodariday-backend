@@ -1,12 +1,12 @@
 import { IsBoolean, IsNumber } from 'class-validator';
 
 export class CreateOfferDto {
-  @IsNumber()
+  @IsNumber({}, { message: 'поле должно быть числом' })
   amount: number;
 
-  @IsBoolean()
+  @IsBoolean({ message: 'поле должно быть булевым значением' })
   hidden: boolean;
 
-  @IsNumber()
+  @IsNumber({}, { message: 'поле должно быть числом' })
   itemId: number;
 }

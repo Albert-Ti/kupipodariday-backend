@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/entities/users.entity';
@@ -13,7 +13,11 @@ export class AuthService {
   ) {}
 
   async register(dto: SignupDto) {
-    return await this.userService.create(dto);
+    try {
+      return await this.userService.create(dto);
+    } catch (error) {
+      throw new UnauthorizedException('Такой пользователь уже создан');
+    }
   }
 
   async authToken(user: User) {

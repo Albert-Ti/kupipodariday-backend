@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Offer } from './entities/offers.entity';
-import { FindOptionsWhere, Repository } from 'typeorm';
-import { CreateOfferDto } from './dto/create-offer.dto';
-import { WishesService } from 'src/wishes/wishes.service';
 import { User } from 'src/users/entities/users.entity';
+import { WishesService } from 'src/wishes/wishes.service';
+import { FindOneOptions, Repository } from 'typeorm';
+import { CreateOfferDto } from './dto/create-offer.dto';
+import { Offer } from './entities/offers.entity';
 
 @Injectable()
 export class OffersService {
@@ -14,22 +14,36 @@ export class OffersService {
     private readonly wishesService: WishesService,
   ) {}
 
-  async create(user: User, dto: CreateOfferDto) {
-    const offer = this.offerRepository.create(dto);
+  async create(authorizedUser: User, dto: CreateOfferDto) {
     const wish = await this.wishesService.findOne({
       where: { id: dto.itemId },
+      relations: { owner: true, offers: true },
     });
 
-    offer.item = wish;
-    offer.user = dto.hidden
-      ? { ...user, avatar: '', username: 'anonyms' }
-      : user;
+    if (authorizedUser.id === wish.owner.id) {
+      throw new ForbiddenException(
+        'Нельзя внести денежные средства на собственное пожелание',
+      );
+    }
 
-    return await this.offerRepository.save(offer);
+    if (dto.amount > +wish.price || dto.amount + +wish.raised > +wish.price) {
+      throw new ForbiddenException(
+        'Нельзя внести денежные средства если превышают стоимость пожелания',
+      );
+    }
+
+    const offer = await this.offerRepository.save({
+      ...dto,
+      item: wish,
+      user: dto.hidden ? authorizedUser : null,
+    });
+
+    await this.wishesService.updateRaised(wish.id);
+    return offer;
   }
 
-  async findOne(query: FindOptionsWhere<Offer>) {
-    return await this.offerRepository.findOne({ where: query });
+  async findOne(query: FindOneOptions) {
+    return await this.offerRepository.findOne(query);
   }
 
   async findAll() {
