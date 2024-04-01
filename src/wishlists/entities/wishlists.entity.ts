@@ -1,4 +1,4 @@
-import { GeneralEntityProperties } from 'src/general-properties.entity';
+import { GeneralEntityProperties } from 'src/common/general-properties.entity';
 import { User } from 'src/users/entities/users.entity';
 import { Wish } from 'src/wishes/entities/wishes.entity';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';

@@ -1,4 +1,4 @@
-import { GeneralEntityProperties } from 'src/general-properties.entity';
+import { GeneralEntityProperties } from 'src/common/general-properties.entity';
 import { Offer } from 'src/offers/entities/offers.entity';
 import { User } from 'src/users/entities/users.entity';
 import { Wishlist } from 'src/wishlists/entities/wishlists.entity';

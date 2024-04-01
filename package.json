@@ -1,7 +1,7 @@
 {
   "name": "kupipodariday",
   "version": "0.0.1",
-  "description": "",
+  "description": "бэкенд для проекта КупиПодариДай. Это сервис в котором пользователи помогают друг другу накопить на свои желания",
   "author": "Albert-Taygibov",
   "private": true,
   "license": "UNLICENSED",

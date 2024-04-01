@@ -10,7 +10,7 @@ import {
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { OffersService } from './offers.service';
-import { RequestWithUser } from 'src/types';
+import { RequestWithUser } from 'src/common/types';
 @UseGuards(JwtAuthGuard)
 @Controller('offers')
 export class OffersController {
