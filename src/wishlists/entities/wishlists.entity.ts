@@ -1,7 +1,7 @@
 import { GeneralEntityProperties } from 'src/general-properties.entity';
 import { User } from 'src/users/entities/users.entity';
 import { Wish } from 'src/wishes/entities/wishes.entity';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'wishlists' })
 export class Wishlist extends GeneralEntityProperties {
@@ -15,8 +15,9 @@ export class Wishlist extends GeneralEntityProperties {
   image: string;
 
   @ManyToOne(() => User, (user) => user.wishlists)
-  user: User;
+  owner: User;
 
-  @OneToMany(() => Wish, (wish) => wish.wishlist)
+  @ManyToMany(() => Wish, (wish) => wish.wishlist, { cascade: true })
+  @JoinTable()
   items: Wish[];
 }

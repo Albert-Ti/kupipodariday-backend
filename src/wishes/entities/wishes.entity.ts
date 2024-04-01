@@ -2,7 +2,7 @@ import { GeneralEntityProperties } from 'src/general-properties.entity';
 import { Offer } from 'src/offers/entities/offers.entity';
 import { User } from 'src/users/entities/users.entity';
 import { Wishlist } from 'src/wishlists/entities/wishlists.entity';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity({ name: 'wishes' })
 export class Wish extends GeneralEntityProperties {
@@ -27,12 +27,12 @@ export class Wish extends GeneralEntityProperties {
   @Column({ default: 0 })
   copied: number;
 
-  @OneToMany(() => Offer, (offer) => offer.item, { cascade: true })
+  @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];
 
   @ManyToOne(() => User, (user) => user.wishes)
   owner: User;
 
-  @ManyToOne(() => Wishlist, (wishlist) => wishlist.items)
-  wishlist: Wishlist;
+  @ManyToMany(() => Wishlist, (wishlist) => wishlist.items)
+  wishlist: Wishlist[];
 }

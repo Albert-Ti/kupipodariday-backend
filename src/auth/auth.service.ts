@@ -16,7 +16,7 @@ export class AuthService {
     try {
       return await this.userService.create(dto);
     } catch (error) {
-      throw new UnauthorizedException('Такой пользователь уже создан');
+      throw new UnauthorizedException('Пользователь уже зарегистрирован');
     }
   }
 

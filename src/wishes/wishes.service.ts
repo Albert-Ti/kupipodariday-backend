@@ -49,7 +49,7 @@ export class WishesService {
   ) {
     const { id, raised, owner, offers } = await this.findOne({
       ...query,
-      relations: { owner: true, offers: true },
+      relations: ['owner', 'offers'],
     });
 
     if (authorizedUser.id !== owner.id) {
@@ -69,7 +69,7 @@ export class WishesService {
   async updateRaised(id: number) {
     const wish = await this.wishRepository.findOne({
       where: { id },
-      relations: { owner: true, offers: true },
+      relations: ['owner', 'offers'],
     });
 
     await this.wishRepository.save({
@@ -100,7 +100,7 @@ export class WishesService {
     await this.wishRepository.save(originalWish);
 
     const { id, createdAt, updatedAt, copied, raised, ...copiedWish } =
-      Object.assign(originalWish);
+      Object.assign(originalWish) as Wish;
 
     return await this.create(authorizedUser, copiedWish);
   }

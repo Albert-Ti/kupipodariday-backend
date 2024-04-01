@@ -1,6 +1,7 @@
 import { IsArray, IsOptional, IsUrl, Length } from 'class-validator';
 
-export class CreateWishlistDto {
+export class UpdateWishlistDto {
+  @IsOptional()
   @Length(1, 250, {
     message: 'поле должно быть строкой и содержать от 1-го до 250-ти символов',
   })
@@ -16,6 +17,7 @@ export class CreateWishlistDto {
   @IsUrl({}, { message: 'поле должно быть ссылкой' })
   image: string;
 
+  @IsOptional()
   @IsArray({
     message: 'поле должно содержать массив чисел',
   })

@@ -15,7 +15,7 @@ export class UsersService {
   async create(dto: CreateUserDto) {
     const { password, ...result } = await this.userRepository.save({
       ...dto,
-      password: await this.hashPassword(dto.password),
+      password: await this.hash(dto.password),
     });
     return result;
   }
@@ -32,13 +32,13 @@ export class UsersService {
     if (dto.password) {
       return await this.userRepository.update(id, {
         ...dto,
-        password: await this.hashPassword(dto.password),
+        password: await this.hash(dto.password),
       });
     }
     return await this.userRepository.update(id, dto);
   }
 
-  async hashPassword(password: string) {
+  async hash(password: string) {
     return await bcrypt.hash(password, 10);
   }
 }

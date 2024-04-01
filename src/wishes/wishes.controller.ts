@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
-import { UserRequest } from 'src/types';
+import { RequestWithUser } from 'src/types';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { UpdateWishDto } from './dto/update-wish.dto';
 
@@ -21,7 +21,7 @@ export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
   @Post()
-  async create(@Req() req: UserRequest, @Body() dto: CreateWishDto) {
+  async create(@Req() req: RequestWithUser, @Body() dto: CreateWishDto) {
     return await this.wishesService.create(req.user, dto);
   }
 
@@ -39,14 +39,14 @@ export class WishesController {
   async getById(@Param('id') id: number) {
     return await this.wishesService.findOne({
       where: { id },
-      relations: { owner: true, offers: { user: true } },
+      relations: ['owner', 'offers', 'offers.user'],
       order: { createdAt: 'DESC' },
     });
   }
 
   @Patch(':id')
   async update(
-    @Req() req: UserRequest,
+    @Req() req: RequestWithUser,
     @Body() dto: UpdateWishDto,
     @Param('id') id: number,
   ) {
@@ -59,10 +59,10 @@ export class WishesController {
   }
 
   @Post(':id/copy')
-  async copy(@Req() req: UserRequest, @Param('id') id: number) {
+  async copy(@Req() req: RequestWithUser, @Param('id') id: number) {
     return await this.wishesService.copy(req.user, {
       where: { id },
-      relations: { owner: true },
+      relations: ['owner'],
     });
   }
 }

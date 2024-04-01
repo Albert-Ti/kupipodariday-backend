@@ -10,14 +10,14 @@ import {
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { OffersService } from './offers.service';
-import { UserRequest } from 'src/types';
+import { RequestWithUser } from 'src/types';
 @UseGuards(JwtAuthGuard)
 @Controller('offers')
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
   @Post()
-  async create(@Req() req: UserRequest, @Body() dto: CreateOfferDto) {
+  async create(@Req() req: RequestWithUser, @Body() dto: CreateOfferDto) {
     return await this.offersService.create(req.user, dto);
   }
 

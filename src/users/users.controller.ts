@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { UserRequest } from 'src/types';
+import { RequestWithUser } from 'src/types';
 import { WishesService } from 'src/wishes/wishes.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -23,13 +23,12 @@ export class UsersController {
   ) {}
 
   @Get('me')
-  async getMe(@Req() req: UserRequest) {
-    const { password, ...user } = req.user;
-    return user;
+  async getMe(@Req() req: RequestWithUser) {
+    return req.user;
   }
 
   @Get('me/wishes')
-  async getMyWishes(@Req() req: UserRequest) {
+  async getMyWishes(@Req() req: RequestWithUser) {
     return await this.wishesService.findOwnWishes({
       where: { owner: { id: req.user.id } },
       order: { createdAt: 'DESC' },
@@ -37,7 +36,7 @@ export class UsersController {
   }
 
   @Patch('me')
-  async updateMe(@Req() req: UserRequest, @Body() dto: UpdateUserDto) {
+  async updateMe(@Req() req: RequestWithUser, @Body() dto: UpdateUserDto) {
     return await this.usersService.updateOne(req.user.id, dto);
   }
 

@@ -17,7 +17,7 @@ export class OffersService {
   async create(authorizedUser: User, dto: CreateOfferDto) {
     const wish = await this.wishesService.findOne({
       where: { id: dto.itemId },
-      relations: { owner: true, offers: true },
+      relations: ['owner', 'offers'],
     });
 
     if (authorizedUser.id === wish.owner.id) {
