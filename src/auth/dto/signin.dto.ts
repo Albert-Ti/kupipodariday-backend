@@ -13,7 +13,7 @@ export class SigninDto {
 
   @IsNotEmpty()
   @Length(4, 16, {
-    message: 'поле должно быть строкой и содержать от 4-х до 20-ти символов',
+    message: 'поле должно быть строкой и содержать от 4-х до 16-ти символов',
   })
   readonly password: string;
 }
