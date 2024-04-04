@@ -1,18 +1,16 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
-import { AuthService } from './auth.service';
+import { validatePassword } from 'src/shared/validate-password';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly authService: AuthService) {
+  constructor(private readonly userService: UsersService) {
     super();
   }
   async validate(username: string, password: string) {
-    const user = await this.authService.validatePassword(username, password);
-    if (!user) {
-      throw new UnauthorizedException('Неверное имя пользователя или пароля');
-    }
-    return user;
+    const user = await this.userService.findOne({ where: { username } });
+    return await validatePassword(user, password);
   }
 }

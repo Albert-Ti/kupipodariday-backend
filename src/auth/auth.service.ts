@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { User } from 'src/users/entities/users.entity';
 import { UsersService } from 'src/users/users.service';
 import { SignupDto } from './dto/signup.dto';
@@ -27,14 +26,5 @@ export class AuthService {
         secret: process.env.SECRET_KEY,
       }),
     };
-  }
-
-  async validatePassword(username: string, password: string) {
-    const user = await this.userService.findOne({ where: { username } });
-    if (user && (await bcrypt.compare(password, user.password))) {
-      const { password, ...result } = user;
-      return result;
-    }
-    return null;
   }
 }

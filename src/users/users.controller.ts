@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { RequestWithUser } from 'src/common/types';
+import { RequestWithUser } from 'src/shared/types';
 import { WishesService } from 'src/wishes/wishes.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -40,8 +40,6 @@ export class UsersController {
     return await this.usersService.updateOne(req.user.id, dto);
   }
 
-  //  (@Param('username') username: string) - ругался и выдавал ошибку (500), решалось если username назначить типом number, поэтому описал по другому.
-  @Get(':username/wishes')
   async getUsernameByWishes(@Param() param: { username: string }) {
     return await this.wishesService.findMany({ where: { owner: param } });
   }

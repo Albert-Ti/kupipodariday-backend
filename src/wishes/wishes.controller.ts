@@ -11,16 +11,16 @@ import {
 } from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
-import { RequestWithUser } from 'src/common/types';
+import { RequestWithUser } from 'src/shared/types';
 import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 import { UpdateWishDto } from './dto/update-wish.dto';
 
-@UseGuards(JwtAuthGuard)
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   async create(@Req() req: RequestWithUser, @Body() dto: CreateWishDto) {
     return await this.wishesService.create(req.user, dto);
   }
@@ -36,6 +36,7 @@ export class WishesController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   async getById(@Param('id') id: number) {
     return await this.wishesService.findOne({
       where: { id },
@@ -45,6 +46,7 @@ export class WishesController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   async update(
     @Req() req: RequestWithUser,
     @Body() dto: UpdateWishDto,
@@ -54,11 +56,13 @@ export class WishesController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async remove(@Param('id') id: number) {
     return await this.wishesService.removeOne({ where: { id } });
   }
 
   @Post(':id/copy')
+  @UseGuards(JwtAuthGuard)
   async copy(@Req() req: RequestWithUser, @Param('id') id: number) {
     return await this.wishesService.copy(req.user, {
       where: { id },
